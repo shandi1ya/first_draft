@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pathway+Gothic+One&family=Antonio:wght@400;700&family=Mrs+Saint+Delafield&display=swap">
+<script src="https://unpkg.com/three@0.149.0/build/three.min.js"></script>
+<script src="./can3d.js"></script>
+<style>
+@font-face{font-family:'FD Script';src:local('Taken by Vultures Alternates Demo'),local('TakenbyVulturesAlternatesDemo'),local('Taken by Vultures Alternates'),local('Taken by Vultures Demo'),local('Taken by Vultures'),url('assets/fonts/taken-by-vultures.otf') format('opentype');font-display:swap;size-adjust:165%}
+html{scroll-behavior:smooth}
+body{margin:0;background:#fff;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+a:hover{opacity:.7}
+button{font:inherit;color:inherit}
+@keyframes fdHover{0%,100%{transform:translateY(-1.2%)}50%{transform:translateY(1.2%)}}
+@keyframes fdShadow{0%,100%{transform:translateX(-50%) scale(.82);opacity:.55}50%{transform:translateX(-50%) scale(1);opacity:.9}}
+@media (prefers-reduced-motion:reduce){[data-hover-anim]{animation:none!important}}
+input:focus-visible,button:focus-visible,a:focus-visible{outline:2px solid #000;outline-offset:3px}
+</style>
+</helmet>
+
+<div style="background:{{ t.bg }};transition:background-color .6s ease;color:#000;font-family:'Pathway Gothic One',sans-serif;overflow-x:clip;min-height:100vh">
+
+<div aria-hidden="true" style="display:none"><img data-label-src="apple" src="assets/label-apple.webp" alt=""><img data-label-src="peach" src="assets/label-peach.webp" alt=""><img data-label-src="guava" src="assets/label-guava.webp" alt=""><img data-label-src="pineapple" src="assets/label-pineapple.webp" alt=""></div>
+<nav style="position:fixed;top:14px;left:50%;z-index:40;transform:translate(-50%,{{ navY }});transition:transform .45s cubic-bezier(.2,.8,.2,1);width:max-content;max-width:calc(100vw - 20px)">
+  <div style="display:flex;align-items:center;gap:4px;background:#000;color:#fff;border-radius:999px;padding:6px;overflow-x:auto;scrollbar-width:none">
+    <a href="#top" aria-label="First Draft home" style="display:flex;align-items:center;padding:{{ navLogoPad }};flex:none" style-hover="opacity:.75"><img src="assets/logo.webp" alt="First Draft" style="height:19px;display:block;filter:invert(1)"></a>
+    <span style="display:{{ navSep }};width:1px;height:22px;background:rgba(255,255,255,.25);flex:none;margin:0 4px"></span>
+    <sc-for list="{{ navLinks }}" as="n" hint-placeholder-count="5">
+      <a href="{{ n.href }}" style="padding:9px {{ navPadX }};border-radius:999px;background:{{ n.bg }};color:{{ n.fg }};font-size:{{ navFs }};letter-spacing:{{ navLs }};text-transform:uppercase;white-space:nowrap;flex:none;transition:background-color .25s,color .25s" style-hover="opacity:1;background:rgba(255,255,255,.14)">{{ n.label }}</a>
+    </sc-for>
+    <span style="display:{{ navSep }};width:1px;height:22px;background:rgba(255,255,255,.25);flex:none;margin:0 4px"></span>
+    <button onClick="{{ openCart }}" aria-label="Open cart" style="display:flex;align-items:center;gap:10px;background:none;border:0;color:#fff;border-radius:999px;padding:6px 6px 6px {{ navPadX }};font-size:{{ navFs }};letter-spacing:{{ navLs }};text-transform:uppercase;cursor:pointer;flex:none" style-hover="background:rgba(255,255,255,.14)">Cart <span style="background:{{ t.accent }};color:#000;border-radius:999px;min-width:28px;height:28px;display:grid;place-items:center;font-size:15px;padding:0 8px;box-sizing:border-box;transform:{{ cartBump }};transition:transform .25s cubic-bezier(.3,1.6,.5,1),background-color .6s">{{ cartCount }}</span></button>
+  </div>
+</nav>
+
+<section id="top" data-screen-label="Hero" style="max-width:1440px;margin:0 auto;padding:110px clamp(20px,4vw,56px) 0;box-sizing:border-box">
+  <div style="min-height:calc(100vh - 230px);display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,360px),1fr));align-items:center;gap:clamp(32px,5vw,96px)">
+    <div style="display:flex;flex-direction:column;gap:clamp(22px,3.4vh,36px);max-width:580px">
+      <span style="font-size:15px;letter-spacing:.16em;text-transform:uppercase;opacity:.6">Sparkling caffeinated juice · 330ml</span>
+      <div style="position:relative;padding-bottom:clamp(44px,7vh,72px)">
+        <img src="assets/wordmark.webp" alt="First Draft" style="width:min(100%,54vh);display:block">
+        <div style="position:absolute;left:10%;right:0;bottom:-4%;display:flex;align-items:center">
+          <span style="font-family:'FD Script','Mrs Saint Delafield',cursive;font-size:clamp(42px,min(5.6vw,8.4vh),94px);line-height:1;color:{{ t.accent }};white-space:nowrap;transition:color .6s">perfection is a myth</span>
+          <span style="flex:1;height:2px;background:{{ t.accent }};margin-left:10px;transition:background-color .6s"></span>
+        </div>
+      </div>
+      <p style="margin:clamp(26px,4.4vh,48px) 0 0;font-size:clamp(20px,min(1.7vw,3vh),24px);line-height:1.3;max-width:34ch;text-wrap:pretty">Sparkling fruit juice with natural caffeine and L-theanine. Made for starting before you feel ready.</p>
+      <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+        <a href="#shop" style="background:#000;color:#fff;padding:15px 30px;border-radius:999px;font-size:19px;letter-spacing:.1em;text-transform:uppercase" style-hover="opacity:.85">Shop now</a>
+        <a href="#drafts" style="padding:13px 28px;border-radius:999px;border:1.5px solid #000;font-size:19px;letter-spacing:.1em;text-transform:uppercase" style-hover="opacity:1;background:#000;color:#fff">See the range</a>
+      </div>
+      <span style="font-size:17px;letter-spacing:.04em;opacity:.7">Free delivery on 12+ cans · Subscribe and save 10%</span>
+    </div>
+    <div style="position:relative;height:min(70vh,720px);min-height:440px">
+      <div ref="{{ stampRef }}" style="position:absolute;left:50%;top:50%;height:90%;aspect-ratio:2828/3983;transform:translate(-50%,-50%);background:url(assets/stamp.webp) center/100% 100% no-repeat;container-type:size">
+        <sc-if value="{{ stPrinted }}" hint-placeholder-val="{{ true }}">
+          <div style="position:absolute;inset:7% 9.5%;background:{{ t.accent }};border-radius:3px;transition:background-color .6s;overflow:hidden;box-shadow:inset 0 0 0 1px rgba(0,0,0,.08),inset 0 1.4cqh 2.6cqh rgba(0,0,0,.28),inset 0 -.6cqh 1.6cqh rgba(0,0,0,.12)">
+            <div style="position:absolute;inset:0;background:radial-gradient(120% 90% at 50% 38%,rgba(255,255,255,.14),rgba(255,255,255,0) 55%,rgba(0,0,0,.2) 100%);pointer-events:none"></div>
+            <div data-hover-anim="1" style="position:absolute;left:50%;bottom:9%;width:52%;height:6%;background:radial-gradient(closest-side,rgba(0,0,0,.45),rgba(0,0,0,0));border-radius:50%;animation:fdShadow 4.5s ease-in-out infinite;pointer-events:none"></div>
+            <span style="position:absolute;left:7%;top:4.5%;font-family:Antonio,sans-serif;font-weight:700;font-size:max(18px,6cqh);line-height:.85;color:#000">0{{ t.no }}</span>
+            <span style="position:absolute;right:7%;bottom:4.5%;font-size:max(11px,2.2cqh);letter-spacing:.16em;text-transform:uppercase;color:#000">330 ml</span>
+          </div>
+        </sc-if>
+        <sc-if value="{{ stPostmark }}" hint-placeholder-val="{{ false }}">
+          <svg viewBox="0 0 260 140" style="position:absolute;right:-34%;top:5%;width:74%;overflow:visible;pointer-events:none">
+            <defs><path id="pm-ring" d="M70,70 m-50,0 a50,50 0 1,1 100,0 a50,50 0 1,1 -100,0"></path></defs>
+            <g fill="none" stroke="{{ t.accent }}" stroke-width="2">
+              <circle cx="70" cy="70" r="62"></circle>
+              <path d="M140 52 q12 -7 24 0 t24 0 t24 0 t24 0 t24 0"></path>
+              <path d="M140 70 q12 -7 24 0 t24 0 t24 0 t24 0 t24 0"></path>
+              <path d="M140 88 q12 -7 24 0 t24 0 t24 0 t24 0 t24 0"></path>
+            </g>
+            <text font-family="Antonio, sans-serif" font-weight="700" font-size="11" letter-spacing="2.4" fill="{{ t.accent }}"><textPath href="#pm-ring">FIRST DRAFT • 330 ML • START ANYWAY •</textPath></text>
+            <text x="70" y="66" text-anchor="middle" font-family="Antonio, sans-serif" font-weight="700" font-size="24" fill="{{ t.accent }}">No. 0{{ t.no }}</text>
+            <text x="70" y="86" text-anchor="middle" font-family="Antonio, sans-serif" font-size="10" letter-spacing="2.4" fill="{{ t.accent }}">DRAFT 1</text>
+          </svg>
+        </sc-if>
+      </div>
+      <div data-par="18" style="position:absolute;inset:0;transition:transform .9s cubic-bezier(.2,.8,.2,1)"><div data-hover-anim="1" style="position:absolute;inset:0;animation:fdHover 4.5s ease-in-out infinite"><div ref="{{ heroCanEl }}" style="position:absolute;inset:0;opacity:0;transition:opacity .9s ease"></div></div></div>
+      <span style="position:absolute;left:0;right:0;bottom:0;text-align:center;font-size:13px;letter-spacing:.16em;text-transform:uppercase;opacity:.5;pointer-events:none">Drag to turn</span>
+    </div>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,140px),1fr));border-top:1px solid #000;margin-top:32px">
+    <sc-for list="{{ facts }}" as="f" hint-placeholder-count="4">
+      <div style="padding:22px 20px 30px 0;display:flex;flex-direction:column;gap:4px">
+        <span style="font-family:Antonio,sans-serif;font-weight:700;font-size:clamp(32px,3vw,44px);line-height:1">{{ f.v }}</span>
+        <span style="font-size:15px;letter-spacing:.12em;text-transform:uppercase;opacity:.6">{{ f.l }}</span>
+      </div>
+    </sc-for>
+  </div>
+</section>
+
+<section id="edit" ref="{{ maniRef }}" data-screen-label="The Edit" style="height:260vh;position:relative;background:#000;color:#fff">
+  <div style="position:sticky;top:0;height:100vh;max-width:1440px;margin:0 auto;padding:100px clamp(20px,4vw,56px) 48px;box-sizing:border-box;display:flex;flex-direction:column;gap:min(3vh,28px)">
+    <div style="display:flex;justify-content:space-between;gap:16px;font-size:15px;letter-spacing:.16em;text-transform:uppercase;border-bottom:1px solid rgba(255,255,255,.3);padding-bottom:14px">
+      <span style="opacity:.6">No. 01 — The Edit</span><span style="opacity:.6">Draft 1</span>
+    </div>
+    <div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:min(3.4vh,30px);max-width:1120px">
+      <div style="display:grid;grid-template-columns:clamp(28px,4vw,56px) minmax(0,1fr);gap:clamp(12px,2vw,28px);align-items:baseline">
+        <span style="font-size:15px;letter-spacing:.12em;opacity:.45">01</span>
+        <div data-at="0" data-k="line" style="opacity:.1;font-size:clamp(22px,min(3vw,4.4vh),52px);line-height:1.12;text-wrap:pretty">We spend so much of life waiting until we're <span style="position:relative;display:inline-block;opacity:.45">perfect<span data-at="0.09" data-k="strike" style="position:absolute;left:-4%;right:-4%;top:54%;height:3px;border-radius:2px;background:{{ t.accent }};transform-origin:left center;transform:scaleX(0)"></span></span> <span data-at="0.14" data-k="fix" style="display:inline-block;font-family:'FD Script','Mrs Saint Delafield',cursive;font-size:1.5em;line-height:.6;color:{{ t.accent }};opacity:0;padding:0 .08em">ready.</span></div>
+      </div>
+      <div style="display:grid;grid-template-columns:clamp(28px,4vw,56px) minmax(0,1fr);gap:clamp(12px,2vw,28px);align-items:baseline">
+        <span style="font-size:15px;letter-spacing:.12em;opacity:.45">02</span>
+        <div data-at="0.22" data-k="line" style="opacity:.1;font-family:Antonio,sans-serif;font-weight:700;font-size:clamp(26px,min(3.8vw,5.4vh),68px);line-height:1;text-transform:uppercase">Ready enough. Good enough. Perfect enough.</div>
+      </div>
+      <div style="display:grid;grid-template-columns:clamp(28px,4vw,56px) minmax(0,1fr);gap:clamp(12px,2vw,28px);align-items:baseline">
+        <span style="font-size:15px;letter-spacing:.12em;opacity:.45">03</span>
+        <div data-at="0.34" data-k="fix" style="font-family:'FD Script','Mrs Saint Delafield',cursive;font-size:clamp(44px,min(6vw,8.6vh),116px);line-height:1;color:{{ t.accent }};opacity:0;white-space:nowrap">but perfection never arrives.</div>
+      </div>
+      <div style="display:grid;grid-template-columns:clamp(28px,4vw,56px) minmax(0,1fr);gap:clamp(12px,2vw,28px);align-items:baseline">
+        <span style="font-size:15px;letter-spacing:.12em;opacity:.45">04</span>
+        <div data-at="0.46" data-k="line" style="opacity:.1;font-size:clamp(22px,min(3vw,4.4vh),52px);line-height:1.12;text-wrap:pretty">The people who change the world aren't the ones who waited, they're the ones who <span style="position:relative;display:inline-block;opacity:.45">finished<span data-at="0.56" data-k="strike" style="position:absolute;left:-4%;right:-4%;top:54%;height:3px;border-radius:2px;background:{{ t.accent }};transform-origin:left center;transform:scaleX(0)"></span></span> <span data-at="0.61" data-k="fix" style="display:inline-block;font-family:'FD Script','Mrs Saint Delafield',cursive;font-size:1.5em;line-height:.6;color:{{ t.accent }};opacity:0;padding:0 .08em">started.</span></div>
+      </div>
+      <div style="display:grid;grid-template-columns:clamp(28px,4vw,56px) minmax(0,1fr);gap:clamp(12px,2vw,28px);align-items:baseline">
+        <span style="font-size:15px;letter-spacing:.12em;opacity:.45">05</span>
+        <div data-at="0.7" data-k="line" style="opacity:.1;font-size:clamp(22px,min(3vw,4.4vh),52px);line-height:1.12"><span style="position:relative;display:inline-block">That's why we made First Draft.<span data-at="0.78" data-k="strike" style="position:absolute;left:0;right:0;bottom:-.12em;height:3px;border-radius:2px;background:{{ t.accent }};transform-origin:left center;transform:scaleX(0)"></span></span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="drafts" data-screen-label="The range" style="max-width:1440px;margin:0 auto;padding:130px clamp(20px,4vw,56px) 110px;box-sizing:border-box">
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,360px),1fr));gap:24px 64px;align-items:end;margin-bottom:56px">
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <span style="font-size:15px;letter-spacing:.16em;text-transform:uppercase;opacity:.6">No. 02 — The range</span>
+      <h2 style="margin:0;font-family:Antonio,sans-serif;font-weight:700;font-size:clamp(52px,6vw,96px);line-height:.9;text-transform:uppercase">Four drafts.</h2>
+    </div>
+    <p style="margin:0;font-size:clamp(20px,1.6vw,23px);line-height:1.32;max-width:42ch;text-wrap:pretty">One recipe, four fruits. Every can has 12% real juice, 80mg of natural caffeine from green coffee beans and 100mg of L-theanine.</p>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,160px),1fr));gap:clamp(16px,2.4vw,36px)">
+    <sc-for list="{{ drafts }}" as="d" hint-placeholder-count="4">
+      <button data-tilt="1" onClick="{{ d.pick }}" style="background:none;border:0;padding:0;cursor:pointer;text-align:left;display:flex;flex-direction:column;gap:14px;perspective:900px">
+        <div data-tilt-card="1" style="transition:transform .5s cubic-bezier(.2,.8,.2,1);will-change:transform;width:100%;aspect-ratio:2828/3983;background:url(assets/stamp.webp) center/100% 100% no-repeat;padding:9%;box-sizing:border-box">
+          <div style="width:100%;height:100%;background:{{ d.bg }};border-radius:3px;position:relative">
+            <span style="position:absolute;left:10%;top:7%;font-size:14px;letter-spacing:.14em;text-transform:uppercase;opacity:.6">No. {{ d.no }}</span>
+            <div data-tilt-shot="1" style="transition:transform .5s cubic-bezier(.2,.8,.2,1);position:absolute;left:0;right:0;top:14%;bottom:8%;background-image:{{ d.shotBg }};background-position:center;background-size:contain;background-repeat:no-repeat"></div>
+          </div>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;border-top:1px solid #000;padding-top:12px;font-size:19px;letter-spacing:.1em;text-transform:uppercase">
+          <span style="display:flex;align-items:center;gap:10px"><span style="width:10px;height:10px;border-radius:50%;background:{{ d.accent }}"></span>{{ d.name }}</span>
+          <span style="opacity:.6">{{ d.cta }}</span>
+        </div>
+        <p style="margin:-4px 0 0;font-size:18px;line-height:1.3;opacity:.75;text-wrap:pretty">{{ d.note }}</p>
+      </button>
+    </sc-for>
+  </div>
+</section>
+
+<section id="shop" data-screen-label="Shop" style="background:#fff">
+  <div style="max-width:1440px;margin:0 auto;padding:130px clamp(20px,4vw,56px) 120px;box-sizing:border-box;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,380px),1fr));gap:clamp(32px,5vw,96px);align-items:start">
+    <div style="position:{{ shopPos }};top:88px;height:{{ shopH }};min-height:{{ shopMinH }};border-radius:24px;background:{{ t.bg }};transition:background-color .6s;overflow:hidden">
+      <div style="position:absolute;left:50%;bottom:8%;width:min(30%,20vh);height:4%;transform:translateX(-50%);background:radial-gradient(closest-side,rgba(0,0,0,.16),rgba(0,0,0,0));border-radius:50%"></div>
+      <div ref="{{ shopCanEl }}" style="position:absolute;inset:0;opacity:0;transition:opacity .9s ease"></div>
+      <span style="position:absolute;left:0;right:0;bottom:22px;text-align:center;font-size:14px;letter-spacing:.16em;text-transform:uppercase;opacity:.55;pointer-events:none">Drag to turn</span>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:34px;min-width:0">
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <span style="font-size:15px;letter-spacing:.16em;text-transform:uppercase;opacity:.6">No. 03 — Shop</span>
+        <div style="display:flex;align-items:baseline;gap:18px;flex-wrap:wrap;margin-top:28px">
+          <h2 style="margin:0;font-family:Antonio,sans-serif;font-weight:700;font-size:clamp(52px,6vw,96px);line-height:.9;text-transform:uppercase;white-space:nowrap">Draft 1</h2>
+          <span style="font-family:'FD Script','Mrs Saint Delafield',cursive;font-size:clamp(48px,5vw,84px);line-height:.8;color:{{ t.accent }};transition:color .6s">{{ t.script }}</span>
+        </div>
+        <p style="margin:6px 0 0;font-size:21px;line-height:1.32;max-width:44ch;text-wrap:pretty">{{ t.desc }}</p>
+        <div style="display:flex;align-items:baseline;gap:12px;margin-top:6px">
+          <span style="font-family:Antonio,sans-serif;font-weight:700;font-size:40px;line-height:1">{{ unitPrice }}</span>
+          <span style="font-size:17px;opacity:.6">{{ unitNote }}</span>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:4px">
+          <sc-for list="{{ badges }}" as="b" hint-placeholder-count="4">
+            <span style="display:flex;align-items:baseline;gap:6px;padding:6px 12px;border-radius:999px;background:{{ t.bg }};font-size:16px;letter-spacing:.04em;transition:background-color .6s"><span style="opacity:.65">{{ b.k }}</span><span>{{ b.v }}</span></span>
+          </sc-for>
+        </div>
+        <a href="#reviews" style="align-self:flex-start;font-size:17px;letter-spacing:.06em;border-bottom:1px solid #000;padding-bottom:1px;margin-top:2px">Read what people say ↓</a>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <span style="font-size:15px;letter-spacing:.16em;text-transform:uppercase;opacity:.6">Flavour</span>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <sc-for list="{{ swatches }}" as="s" hint-placeholder-count="4">
+            <button onClick="{{ s.pick }}" aria-pressed="{{ s.active }}" style="display:flex;align-items:center;gap:7px;padding:9px 13px;border-radius:999px;border:1.5px solid {{ s.border }};background:{{ s.bg }};color:{{ s.fg }};font-size:17px;letter-spacing:.04em;text-transform:uppercase;cursor:pointer;transition:background-color .2s,color .2s,border-color .2s">
+              <span style="width:10px;height:12px;border-radius:50%;background:{{ s.accent }}"></span>{{ s.name }}
+            </button>
+          </sc-for>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <span style="font-size:15px;letter-spacing:.16em;text-transform:uppercase;opacity:.6">Pack size</span>
+        <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px">
+          <sc-for list="{{ packs }}" as="p" hint-placeholder-count="3">
+            <button onClick="{{ p.pick }}" aria-pressed="{{ p.active }}" style="display:flex;flex-direction:column;gap:2px;align-items:flex-start;text-align:left;padding:14px 16px;border:1.5px solid {{ p.border }};background:{{ p.bg }};color:{{ p.fg }};border-radius:14px;cursor:pointer;transition:background-color .2s,color .2s,border-color .2s">
+              <span style="font-size:19px;text-transform:uppercase;letter-spacing:.08em">{{ p.name }}</span>
+              <span style="font-size:16px;opacity:.7">{{ p.cans }}</span>
+              <span style="font-family:Antonio,sans-serif;font-weight:700;font-size:24px;margin-top:8px">{{ p.total }}</span>
+            </button>
+          </sc-for>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <span style="font-size:15px;letter-spacing:.16em;text-transform:uppercase;opacity:.6">How often</span>
+        <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px">
+          <sc-for list="{{ buyOpts }}" as="o" hint-placeholder-count="2">
+            <button onClick="{{ o.pick }}" aria-pressed="{{ o.active }}" style="display:flex;flex-direction:column;gap:3px;align-items:flex-start;text-align:left;padding:14px 16px;border:1.5px solid {{ o.border }};background:{{ o.bg }};color:{{ o.fg }};border-radius:14px;cursor:pointer;transition:background-color .2s,color .2s,border-color .2s">
+              <span style="display:flex;align-items:center;gap:8px;font-size:19px;text-transform:uppercase;letter-spacing:.08em">{{ o.name }}<span style="display:{{ o.tagShow }};font-size:13px;letter-spacing:.1em;padding:3px 8px;border-radius:999px;background:{{ t.accent }};color:#000">−10%</span></span>
+              <span style="font-size:16px;opacity:.7">{{ o.sub }}</span>
+            </button>
+          </sc-for>
+        </div>
+        <sc-if value="{{ isSub }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px">
+            <sc-for list="{{ freqs }}" as="q" hint-placeholder-count="2">
+              <button onClick="{{ q.pick }}" aria-pressed="{{ q.active }}" style="padding:8px 16px;border-radius:999px;border:1.5px solid {{ q.border }};background:{{ q.bg }};color:{{ q.fg }};font-size:16px;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;transition:background-color .2s,color .2s">{{ q.label }}</button>
+            </sc-for>
+            <span style="font-size:16px;opacity:.6;flex-basis:100%">Skip, pause or cancel any time.</span>
+          </div>
+        </sc-if>
+      </div>
+
+      <div style="display:flex;gap:10px;align-items:stretch;flex-wrap:wrap">
+        <div style="display:flex;align-items:center;border:1.5px solid #000;border-radius:999px">
+          <button onClick="{{ dec }}" aria-label="Decrease quantity" style="width:50px;height:58px;border:0;background:none;font-size:24px;cursor:pointer">−</button>
+          <span style="min-width:28px;text-align:center;font-size:22px">{{ qty }}</span>
+          <button onClick="{{ inc }}" aria-label="Increase quantity" style="width:50px;height:58px;border:0;background:none;font-size:24px;cursor:pointer">+</button>
+        </div>
+        <button ref="{{ addRef }}" onClick="{{ addToCart }}" style="flex:1;min-width:220px;display:flex;align-items:center;justify-content:space-between;gap:16px;background:{{ addBg }};color:{{ addFg }};border:0;border-radius:999px;padding:0 28px;height:61px;font-size:20px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:background-color .25s,color .25s" style-hover="opacity:.88">
+          <span>{{ addLabel }}</span><span>{{ total }}</span>
+        </button>
+      </div>
+
+      <div style="border-top:1px solid #000">
+        <sc-for list="{{ details }}" as="dt" hint-placeholder-count="3">
+          <div style="border-bottom:1px solid #000">
+            <button onClick="{{ dt.toggle }}" aria-expanded="{{ dt.open }}" style="width:100%;display:flex;justify-content:space-between;align-items:center;background:none;border:0;padding:18px 0;cursor:pointer;font-size:19px;letter-spacing:.1em;text-transform:uppercase">
+              <span>{{ dt.label }}</span><span style="font-size:24px;line-height:1;transform:{{ dt.rot }};transition:transform .25s">+</span>
+            </button>
+            <sc-if value="{{ dt.isIng }}" hint-placeholder-val="{{ false }}">
+              <div style="padding:0 0 22px;display:flex;flex-direction:column;gap:14px">
+                <p style="margin:0;font-size:20px;line-height:1.36;text-wrap:pretty">{{ t.ingredients }}</p>
+                <span style="display:flex;align-items:center;gap:10px;font-size:17px"><span style="width:16px;height:16px;border:1.5px solid #0a8a1f;display:grid;place-items:center;box-sizing:border-box"><span style="width:7px;height:7px;border-radius:50%;background:#0a8a1f"></span></span>Vegetarian</span>
+              </div>
+            </sc-if>
+            <sc-if value="{{ dt.isNut }}" hint-placeholder-val="{{ false }}">
+              <div style="padding:0 0 22px;font-size:19px">
+                <div style="display:grid;grid-template-columns:minmax(0,1fr) 80px 96px;padding-bottom:6px;font-size:15px;letter-spacing:.12em;text-transform:uppercase;opacity:.6">
+                  <span>Per</span><span style="text-align:right">100ml</span><span style="text-align:right">330ml can</span>
+                </div>
+                <sc-for list="{{ nut }}" as="n" hint-placeholder-count="9">
+                  <div style="display:grid;grid-template-columns:minmax(0,1fr) 80px 96px;border-top:1px solid rgba(0,0,0,.15);padding:7px 0">
+                    <span style="padding-left:{{ n.pad }}">{{ n.name }}</span><span style="text-align:right">{{ n.a }}</span><span style="text-align:right">{{ n.b }}</span>
+                  </div>
+                </sc-for>
+              </div>
+            </sc-if>
+            <sc-if value="{{ dt.isInfo }}" hint-placeholder-val="{{ false }}">
+              <div style="padding:0 0 22px;display:flex;flex-direction:column;gap:12px;font-size:20px;line-height:1.36">
+                <p style="margin:0">Contains caffeine. Not recommended for children, pregnant or lactating women, persons sensitive to caffeine and sportspersons. Do not consume more than 500ml a day.</p>
+                <p style="margin:0">Best before 12 months from manufacture. Batch and manufacturing date are printed on the base of the can. Serve chilled.</p>
+              </div>
+            </sc-if>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="reviews" data-screen-label="Reviews" style="background:#000;color:#fff">
+<div style="max-width:1440px;margin:0 auto;padding:120px clamp(20px,4vw,56px) 120px;box-sizing:border-box">
+  <div style="display:flex;flex-direction:column;gap:14px;margin-bottom:56px">
+    <span style="font-size:15px;letter-spacing:.16em;text-transform:uppercase;opacity:.6">No. 04 — Reviews</span>
+    <h2 style="margin:0;font-family:Antonio,sans-serif;font-weight:700;font-size:clamp(52px,6vw,96px);line-height:.9;text-transform:uppercase">First sips.</h2>
+    <p style="margin:6px 0 0;font-size:clamp(20px,1.6vw,23px);line-height:1.32;max-width:42ch;text-wrap:pretty">What people said after their first can.</p>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:16px;align-items:stretch">
+    <sc-for list="{{ reviews }}" as="rv" hint-placeholder-count="3">
+      <figure style="margin:0;background:{{ rv.bg }};color:#000;border-radius:24px;padding:clamp(24px,2.6vw,36px);display:flex;flex-direction:column;gap:22px;min-height:100%;box-sizing:border-box;transition:transform .4s cubic-bezier(.2,.8,.2,1)" style-hover="transform:translateY(-6px)">
+        <span aria-hidden="true" style="font-family:Antonio,sans-serif;font-weight:700;font-size:96px;line-height:.6;height:44px;color:{{ rv.accent }}">“</span>
+        <blockquote style="margin:0;flex:1;font-size:clamp(23px,2vw,30px);line-height:1.22;text-wrap:pretty">{{ rv.q }}</blockquote>
+        <figcaption style="display:flex;justify-content:space-between;gap:12px;font-size:16px;letter-spacing:.08em;text-transform:uppercase;border-top:1px solid rgba(0,0,0,.2);padding-top:14px"><span>{{ rv.who }}</span><span style="display:flex;align-items:center;gap:8px;opacity:.7"><span style="width:9px;height:9px;border-radius:50%;background:{{ rv.accent }}"></span>{{ rv.flavor }}</span></figcaption>
+      </figure>
+    </sc-for>
+  </div>
+</div>
+</section>
+
+<section id="faq" data-screen-label="FAQ" style="max-width:1440px;margin:0 auto;padding:130px clamp(20px,4vw,56px) 110px;box-sizing:border-box;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,340px),1fr));gap:40px clamp(40px,6vw,110px);align-items:start">
+  <div style="display:flex;flex-direction:column;gap:14px;position:{{ faqPos }};top:110px;align-self:start">
+    <span style="font-size:15px;letter-spacing:.16em;text-transform:uppercase;opacity:.6">No. 05 — FAQ</span>
+    <h2 style="margin:0;font-family:Antonio,sans-serif;font-weight:700;font-size:clamp(52px,6vw,96px);line-height:.9;text-transform:uppercase">Good<br>questions.</h2>
+    <p style="margin:6px 0 0;font-size:20px;line-height:1.32">Something we missed? Write to <a href="mailto:hello@firstdraft.in" style="border-bottom:1px solid #000">hello@firstdraft.in</a></p>
+  </div>
+  <div style="border-top:1px solid #000">
+    <sc-for list="{{ faq }}" as="q" hint-placeholder-count="6">
+      <div style="border-bottom:1px solid #000">
+        <button onClick="{{ q.toggle }}" aria-expanded="{{ q.open }}" style="width:100%;display:flex;justify-content:space-between;align-items:center;gap:20px;background:none;border:0;padding:22px 0;cursor:pointer;text-align:left;font-size:clamp(22px,2vw,28px)">
+          <span>{{ q.q }}</span><span style="font-size:26px;line-height:1;flex:none;transform:{{ q.rot }};transition:transform .25s">+</span>
+        </button>
+        <div style="display:grid;grid-template-rows:{{ q.rows }};transition:grid-template-rows .45s cubic-bezier(.2,.8,.2,1)">
+          <div style="overflow:hidden;min-height:0">
+            <p style="margin:0 0 24px;font-size:20px;line-height:1.36;max-width:58ch;text-wrap:pretty;opacity:{{ q.op }};transform:translateY({{ q.ty }});transition:opacity .35s,transform .45s cubic-bezier(.2,.8,.2,1)">{{ q.a }}</p>
+          </div>
+        </div>
+      </div>
+    </sc-for>
+  </div>
+</section>
+
+<section id="stockists" data-screen-label="Where to buy" style="max-width:1440px;margin:0 auto;padding:40px clamp(20px,4vw,56px) 140px;box-sizing:border-box">
+  <div style="display:flex;flex-direction:column;gap:14px;margin-bottom:48px">
+    <span style="font-size:15px;letter-spacing:.16em;text-transform:uppercase;opacity:.6">No. 06 — Where to buy</span>
+    <h2 style="margin:0;font-family:Antonio,sans-serif;font-weight:700;font-size:clamp(52px,6vw,96px);line-height:.9;text-transform:uppercase">Find a fridge.</h2>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:40px clamp(24px,4vw,64px)">
+    <div style="border-top:1px solid #000;padding-top:20px;display:flex;flex-direction:column;gap:14px">
+      <span style="font-size:15px;letter-spacing:.16em;opacity:.6">01</span>
+      <div style="font-family:Antonio,sans-serif;font-weight:700;font-size:30px;text-transform:uppercase;line-height:1">Online</div>
+      <p style="margin:0;font-size:20px;line-height:1.32;flex:1">Right here. Single cans, 4-packs and 12-packs in all four flavours.</p>
+      <a href="#shop" style="align-self:flex-start;font-size:18px;letter-spacing:.1em;text-transform:uppercase;border-bottom:1px solid #000;padding-bottom:2px">Shop now →</a>
+    </div>
+    <div style="border-top:1px solid #000;padding-top:20px;display:flex;flex-direction:column;gap:14px">
+      <span style="font-size:15px;letter-spacing:.16em;opacity:.6">02</span>
+      <div style="font-family:Antonio,sans-serif;font-weight:700;font-size:30px;text-transform:uppercase;line-height:1">Cafés &amp; stores</div>
+      <p style="margin:0;font-size:20px;line-height:1.32">We're filling fridges city by city. Leave your pincode and email and we'll tell you when we land near you.</p>
+      <sc-if value="{{ notified }}" hint-placeholder-val="{{ false }}">
+        <p style="margin:0;font-size:20px;line-height:1.32">Noted. We'll email {{ nEmail }} when First Draft reaches {{ pin }}.</p>
+      </sc-if>
+      <sc-if value="{{ notNotified }}" hint-placeholder-val="{{ true }}">
+        <input type="email" value="{{ nEmail }}" onChange="{{ onNEmail }}" placeholder="Your email" aria-label="Email" autocomplete="email" style="height:46px;border:0;border-bottom:1px solid #000;padding:0;color:#000;font-family:'Pathway Gothic One',sans-serif;font-size:20px;background:transparent;outline:none;border-radius:0">
+        <div style="display:flex;border-bottom:1px solid #000">
+          <input value="{{ pin }}" onChange="{{ onPin }}" onKeyDown="{{ onPinKey }}" inputmode="numeric" maxlength="6" placeholder="Enter 6-digit pincode" aria-label="Pincode" style="flex:1;min-width:0;height:46px;border:0;padding:0;color:#000;font-family:'Pathway Gothic One',sans-serif;font-size:20px;background:transparent;outline:none">
+          <button onClick="{{ notify }}" style="background:none;border:0;padding:0 0 0 12px;font-size:18px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;opacity:{{ notifyOp }}">Notify me →</button>
+        </div>
+      </sc-if>
+    </div>
+    <div style="border-top:1px solid #000;padding-top:20px;display:flex;flex-direction:column;gap:14px">
+      <span style="font-size:15px;letter-spacing:.16em;opacity:.6">03</span>
+      <div style="font-family:Antonio,sans-serif;font-weight:700;font-size:30px;text-transform:uppercase;line-height:1">Stock us</div>
+      <p style="margin:0;font-size:20px;line-height:1.32;flex:1">Run a café, store or office pantry? We'd like to be in your fridge.</p>
+      <a href="mailto:hello@firstdraft.in" style="align-self:flex-start;font-size:18px;letter-spacing:.06em;border-bottom:1px solid #000;padding-bottom:2px">hello@firstdraft.in →</a>
+    </div>
+  </div>
+</section>
+
+<section id="help" data-screen-label="Help &amp; contact" style="border-top:1px solid #000">
+  <div style="max-width:1440px;margin:0 auto;padding:110px clamp(20px,4vw,56px) 140px;box-sizing:border-box;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,380px),1fr));gap:56px clamp(40px,6vw,120px);align-items:start">
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <span style="font-size:15px;letter-spacing:.16em;text-transform:uppercase;opacity:.6">No. 07 — Help &amp; contact</span>
+      <h2 style="margin:0;font-family:Antonio,sans-serif;font-weight:700;font-size:clamp(52px,6vw,96px);line-height:.9;text-transform:uppercase">Talk to us.</h2>
+      <p style="margin:6px 0 0;font-size:20px;line-height:1.32;max-width:40ch;text-wrap:pretty">Order trouble, a wholesale enquiry or just a thought on the flavours. Pick a topic and a real person will reply.</p>
+      <div style="display:flex;flex-direction:column;margin-top:30px;border-top:1px solid #000">
+        <a href="mailto:hello@firstdraft.in" style="display:flex;justify-content:space-between;gap:16px;padding:18px 0;border-bottom:1px solid #000;font-size:20px" style-hover="opacity:.6"><span style="font-size:15px;letter-spacing:.16em;text-transform:uppercase;opacity:.6">Email</span><span>hello@firstdraft.in →</span></a>
+        <a href="#" style="display:flex;justify-content:space-between;gap:16px;padding:18px 0;border-bottom:1px solid #000;font-size:20px" style-hover="opacity:.6"><span style="font-size:15px;letter-spacing:.16em;text-transform:uppercase;opacity:.6">Instagram</span><span>@firstdraft →</span></a>
+        <a href="#faq" style="display:flex;justify-content:space-between;gap:16px;padding:18px 0;border-bottom:1px solid #000;font-size:20px" style-hover="opacity:.6"><span style="font-size:15px;letter-spacing:.16em;text-transform:uppercase;opacity:.6">Quick answers</span><span>Read the FAQ →</span></a>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:30px;padding-top:34px">
+      <sc-if value="{{ cSent }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-direction:column;gap:16px;align-items:flex-start;border-top:1px solid #000;padding-top:28px">
+          <div style="font-family:Antonio,sans-serif;font-weight:700;font-size:clamp(34px,3.4vw,48px);text-transform:uppercase;line-height:.95">Message sent.</div>
+          <p style="margin:0;font-size:20px;line-height:1.32;max-width:44ch">Thanks {{ cFirst }}. We'll reply to {{ cEmail }} within a working day.</p>
+          <button onClick="{{ cReset }}" style="background:none;border:0;border-bottom:1px solid #000;padding:0 0 2px;font-size:18px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer">Send another →</button>
+        </div>
+      </sc-if>
+      <sc-if value="{{ cForm }}" hint-placeholder-val="{{ true }}">
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <span style="font-size:15px;letter-spacing:.16em;text-transform:uppercase">What's it about?</span>
+          <div style="display:flex;flex-wrap:wrap;gap:8px">
+            <sc-for list="{{ cTopics }}" as="tp" hint-placeholder-count="5">
+              <button onClick="{{ tp.pick }}" aria-pressed="{{ tp.on }}" style="padding:10px 18px;border-radius:999px;border:1.5px solid #000;background:{{ tp.bg }};color:{{ tp.fg }};font-size:17px;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;transition:background-color .2s,color .2s">{{ tp.label }}</button>
+            </sc-for>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:30px 28px">
+          <label style="display:flex;flex-direction:column;gap:6px;font-size:15px;letter-spacing:.16em;text-transform:uppercase">Name<input value="{{ cName }}" onChange="{{ onCName }}" autocomplete="name" style="width:100%;box-sizing:border-box;height:52px;border:0;border-bottom:1px solid #000;padding:0;color:#000;font-family:'Pathway Gothic One',sans-serif;font-size:22px;background:transparent;outline:none;border-radius:0"></label>
+          <label style="display:flex;flex-direction:column;gap:6px;font-size:15px;letter-spacing:.16em;text-transform:uppercase">Email<input type="email" value="{{ cEmail }}" onChange="{{ onCEmail }}" autocomplete="email" style="width:100%;box-sizing:border-box;height:52px;border:0;border-bottom:1px solid #000;padding:0;color:#000;font-family:'Pathway Gothic One',sans-serif;font-size:22px;background:transparent;outline:none;border-radius:0"></label>
+        </div>
+        <sc-if value="{{ cIsOrder }}" hint-placeholder-val="{{ false }}">
+          <label style="display:flex;flex-direction:column;gap:6px;font-size:15px;letter-spacing:.16em;text-transform:uppercase"><span>Order number <span style="text-transform:none;letter-spacing:.04em;opacity:.55">(optional)</span></span><input value="{{ cOrder }}" onChange="{{ onCOrder }}" placeholder="FD-0000" style="width:100%;box-sizing:border-box;height:52px;border:0;border-bottom:1px solid #000;padding:0;color:#000;font-family:'Pathway Gothic One',sans-serif;font-size:22px;background:transparent;outline:none;border-radius:0"></label>
+        </sc-if>
+        <label style="display:flex;flex-direction:column;gap:6px;font-size:15px;letter-spacing:.16em;text-transform:uppercase">Message<textarea value="{{ cMsg }}" onChange="{{ onCMsg }}" rows="4" style="width:100%;box-sizing:border-box;height:52px;border:0;border-bottom:1px solid #000;padding:0;color:#000;font-family:'Pathway Gothic One',sans-serif;font-size:22px;background:transparent;outline:none;border-radius:0;height:auto;min-height:120px;padding:12px 0;resize:vertical;line-height:1.3"></textarea></label>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap">
+          <span style="font-size:17px;opacity:.6">{{ cHint }}</span>
+          <button onClick="{{ cSend }}" aria-disabled="{{ cBlocked }}" style="height:56px;padding:0 34px;border-radius:999px;border:0;background:#000;color:#fff;font-size:19px;letter-spacing:.1em;text-transform:uppercase;cursor:{{ cCursor }};opacity:{{ cOp }};transition:opacity .2s">Send message →</button>
+        </div>
+      </sc-if>
+    </div>
+  </div>
+</section>
+
+<footer data-screen-label="Footer" style="background:#000;color:#fff">
+  <div style="max-width:1440px;margin:0 auto;padding:90px clamp(20px,4vw,56px) 36px;box-sizing:border-box;display:flex;flex-direction:column;gap:56px">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));gap:40px;align-items:start">
+      <div style="display:flex;flex-direction:column;gap:18px;grid-column:span 2;min-width:0">
+        <div style="font-family:'FD Script','Mrs Saint Delafield',cursive;font-size:clamp(40px,5vw,80px);line-height:1;padding:0 0 .4em .3em;color:{{ t.accent }};transition:color .6s">perfection is a myth</div>
+        <p style="margin:0;font-size:20px;line-height:1.3;max-width:38ch;color:#fff">Sparkling fruit juice with natural caffeine and L-theanine. Four flavours, 330ml cans.</p>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px;font-size:20px">
+        <span style="font-size:15px;letter-spacing:.16em;text-transform:uppercase;opacity:.6;margin-bottom:4px">Shop</span>
+        <a href="#drafts">All flavours</a><a href="#shop">Buy online</a><a href="#stockists">Stockists</a>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px;font-size:20px">
+        <span style="font-size:15px;letter-spacing:.16em;text-transform:uppercase;opacity:.6;margin-bottom:4px">Brand</span>
+        <a href="#edit">The Edit</a><a href="#faq">FAQ</a><a href="https://instagram.com/firstdraft.in">Instagram</a><a href="mailto:hello@firstdraft.in">hello@firstdraft.in</a>
+      </div>
+    </div>
+    <img src="assets/wordmark_long.webp" alt="First Draft" style="width:100%;display:block;filter:invert(1)">
+    <div style="display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-size:16px;letter-spacing:.06em;border-top:1px solid rgba(255,255,255,.3);padding-top:18px;color:rgba(255,255,255,.75)">
+      <span>FSSAI Lic. No. 10027XXXXXXXXX</span><span>Concept project by Amritanshu</span><span>© 2026 First Draft · firstdraft.in</span>
+    </div>
+  </div>
+</footer>
+
+<div style="position:fixed;left:50%;bottom:20px;z-index:45;width:min(560px,calc(100vw - 24px));transform:translate(-50%,{{ barY }});transition:transform .45s cubic-bezier(.2,.8,.2,1)">
+  <div style="display:flex;align-items:center;gap:14px;background:#000;color:#fff;border-radius:999px;padding:8px 8px 8px 22px">
+    <span style="width:10px;height:10px;border-radius:50%;background:{{ t.accent }};flex:none"></span>
+    <div style="display:flex;flex-direction:column;min-width:0;flex:1">
+      <span style="font-size:18px;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Draft 1 · {{ t.name }}</span>
+      <span style="font-size:15px;opacity:.65">{{ packName }} · {{ total }}</span>
+    </div>
+    <button onClick="{{ addToCart }}" style="background:#fff;color:#000;border:0;border-radius:999px;height:46px;padding:0 24px;font-size:18px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;flex:none">{{ addShort }}</button>
+  </div>
+</div>
+
+<sc-if value="{{ toastOn }}" hint-placeholder-val="{{ false }}">
+  <div role="status" style="position:fixed;top:72px;right:clamp(12px,4vw,56px);z-index:50;display:flex;align-items:center;gap:16px;background:#000;color:#fff;border-radius:14px;padding:12px 12px 12px 18px;font-size:18px">
+    <span>Added: {{ toast }}</span>
+    <button onClick="{{ openCart }}" style="background:#fff;color:#000;border:0;border-radius:999px;padding:7px 14px;font-size:15px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer">View cart</button>
+  </div>
+</sc-if>
+
+<sc-if value="{{ cartOpen }}" hint-placeholder-val="{{ false }}">
+  <div onClick="{{ closeCart }}" style="position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:60"></div>
+</sc-if>
+<aside aria-label="Cart" style="position:fixed;top:0;right:0;bottom:0;width:min(440px,100vw);z-index:70;transform:{{ cartX }};transition:transform .45s cubic-bezier(.2,.8,.2,1);background:#fff;display:flex;flex-direction:column;padding:28px 32px;box-sizing:border-box;gap:18px">
+  <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #000;padding-bottom:14px">
+    <span style="font-size:18px;letter-spacing:.12em;text-transform:uppercase">Cart ({{ cartCount }})</span>
+    <button onClick="{{ closeCart }}" aria-label="Close cart" style="background:none;border:0;font-size:28px;line-height:1;cursor:pointer;padding:0 4px">×</button>
+  </div>
+  <div style="flex:1;overflow:auto;display:flex;flex-direction:column;gap:16px">
+    <sc-if value="{{ cartEmpty }}" hint-placeholder-val="{{ true }}">
+      <div style="display:flex;flex-direction:column;align-items:flex-start;gap:16px;padding:24px 0">
+        <span style="font-size:22px">Your cart is empty.</span>
+        <button onClick="{{ browse }}" style="background:#000;color:#fff;border:0;border-radius:999px;padding:13px 24px;font-size:17px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer">Browse flavours</button>
+      </div>
+    </sc-if>
+    <sc-for list="{{ cartItems }}" as="c" hint-placeholder-count="0">
+      <div style="display:grid;grid-template-columns:68px minmax(0,1fr) auto;gap:14px;align-items:center;border-bottom:1px solid rgba(0,0,0,.15);padding-bottom:16px">
+        <div style="height:84px;border-radius:10px;background:{{ c.thumbBg }};padding:6px;box-sizing:border-box">
+          <div style="width:100%;height:100%;background-image:{{ c.shotBg }};background-position:center;background-size:contain;background-repeat:no-repeat"></div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px;min-width:0">
+          <span style="font-size:20px">{{ c.title }}</span>
+          <span style="font-size:16px;opacity:.6">{{ c.sub }}</span>
+          <div style="display:flex;align-items:center;border:1px solid #000;border-radius:999px;align-self:flex-start">
+            <button onClick="{{ c.dec }}" aria-label="Decrease" style="width:30px;height:28px;border:0;background:none;cursor:pointer;font-size:17px">−</button>
+            <span style="min-width:20px;text-align:center;font-size:17px">{{ c.qty }}</span>
+            <button onClick="{{ c.inc }}" aria-label="Increase" style="width:30px;height:28px;border:0;background:none;cursor:pointer;font-size:17px">+</button>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:10px">
+          <span style="font-size:20px">{{ c.price }}</span>
+          <button onClick="{{ c.remove }}" style="background:none;border:0;padding:0;font-size:14px;letter-spacing:.1em;text-transform:uppercase;opacity:.6;cursor:pointer">Remove</button>
+        </div>
+      </div>
+    </sc-for>
+  </div>
+  <sc-if value="{{ cartHas }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex;flex-direction:column;gap:8px;padding:4px 0 16px">
+      <span style="font-size:17px">{{ shipMsg }}</span>
+      <div style="height:6px;border-radius:999px;background:rgba(0,0,0,.1);overflow:hidden"><div style="height:100%;width:{{ shipPct }};background:{{ t.accent }};border-radius:999px;transition:width .5s cubic-bezier(.2,.8,.2,1)"></div></div>
+    </div>
+  </sc-if>
+  <div style="display:flex;flex-direction:column;gap:10px;border-top:1px solid #000;padding-top:16px">
+    <div style="display:flex;justify-content:space-between;align-items:baseline;font-size:18px"><span>Subtotal · {{ canCount }}</span><span>{{ subtotal }}</span></div>
+    <div style="display:flex;justify-content:space-between;align-items:baseline;font-size:18px"><span>Delivery</span><span>{{ shipFee }}</span></div>
+    <div style="display:flex;justify-content:space-between;align-items:baseline;font-size:20px"><span>Total · incl. of all taxes</span><span style="font-family:Antonio,sans-serif;font-weight:700;font-size:28px">{{ grand }}</span></div>
+    <span style="font-size:16px;opacity:.6">Arrives in 2–4 working days.</span>
+    <sc-if value="{{ cartHas }}" hint-placeholder-val="{{ false }}">
+      <div style="border:1.5px dashed #000;border-radius:14px;padding:12px 14px;font-size:17px;line-height:1.3">First order? Code <strong style="letter-spacing:.08em">FIRST10</strong> takes 10% off at checkout.</div>
+    </sc-if>
+    <button onClick="{{ checkout }}" style="height:58px;background:#000;color:#fff;border:0;border-radius:999px;font-size:19px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer">Checkout</button>
+    <sc-if value="{{ checkoutNote }}" hint-placeholder-val="{{ false }}">
+      <span style="font-size:16px;text-align:center;opacity:.7">Checkout isn't connected in this prototype.</span>
+    </sc-if>
+  </div>
+</aside>
+
+</div>
+</x-dc>
+<template id="__bundler_thumbnail"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#ffd3d3"/><text x="50" y="62" text-anchor="middle" font-family="Impact,sans-serif" font-size="34" font-weight="700" fill="#000">FD</text></svg></template>
+<script type="text/x-dc" data-dc-script data-props="{&quot;stampStyle&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;printed&quot;,&quot;postmark&quot;,&quot;plain&quot;],&quot;default&quot;:&quot;printed&quot;,&quot;tsType&quot;:&quot;'printed'|'postmark'|'plain'&quot;,&quot;section&quot;:&quot;Hero stamp&quot;},&quot;autoSpin&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Can&quot;},&quot;canFinish&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;gloss&quot;,&quot;satin&quot;,&quot;matte&quot;],&quot;default&quot;:&quot;gloss&quot;,&quot;tsType&quot;:&quot;'gloss'|'satin'|'matte'&quot;,&quot;section&quot;:&quot;Can&quot;}}">
+const FL = [
+  { key: 'apple', name: 'Apple', script: 'apple', juice: 'Apple', bg: '#ffd3d5', accent: '#f40008', label: 'assets/label-apple.webp', note: 'Crisp and tart, like biting into a green apple.' },
+  { key: 'peach', name: 'Peach', script: 'peach', juice: 'Peach', bg: '#ffd7ff', accent: '#ff00e0', label: 'assets/label-peach.webp', note: 'Soft, ripe and gently floral.' },
+  { key: 'guava', name: 'Guava', script: 'guava', juice: 'Guava', bg: '#d7ffe0', accent: '#00d52e', label: 'assets/label-guava.webp', note: 'Pink guava, fragrant with a tangy finish.' },
+  { key: 'pineapple', name: 'Pineapple', script: 'pine apple', juice: 'Pine Apple', bg: '#ffefd7', accent: '#ff9900', label: 'assets/label-pineapple.webp', note: 'Bright, tangy and sun-ripe.' }
+];
+const PACKS = [{ key: '1', name: 'Single', n: 1 }, { key: '4', name: '4-pack', n: 4 }, { key: '12', name: '12-pack', n: 12 }];
+const PRICE = 199, SUB_OFF = 0.1, FREE_SHIP = 12, SHIP = 49;
+const REVIEWS = [
+  ['I keep one in my bag for the 4pm slump. No crash, and it actually tastes like apple.', 'Riya · Pune', 'apple'],
+  ['Swapped my second coffee for the peach one. Calmer focus, and I sleep fine.', 'Karan · Bengaluru', 'peach'],
+  ['Our studio fridge is stocked with guava now. It goes faster than anything else in there.', 'Meera · Mumbai', 'guava']
+];
+const NUT = [['Energy', '19 kcal', '63 kcal'], ['Carbohydrate', '4.6 g', '15.2 g'], ['of which total sugars', '4.2 g', '13.9 g', 1], ['of which added sugars', '2.0 g', '6.6 g', 1], ['Protein', '0 g', '0 g'], ['Total fat', '0 g', '0 g'], ['Sodium', '6 mg', '20 mg'], ['Caffeine', '24 mg', '80 mg'], ['L-theanine', '30 mg', '100 mg']];
+const FAQ = [
+  ['How much caffeine is in a can?', 'Each 330ml can has 80mg of natural caffeine from green coffee bean extract (24mg per 100ml), along with 100mg of L-theanine.'],
+  ['How much sugar is in it?', 'A can has 13.9g of total sugars, of which 6.6g is added cane sugar. That comes to 63 kcal per can.'],
+  ['Is it vegetarian?', 'Yes. All four flavours are vegetarian.'],
+  ['Who shouldn\u2019t drink it?', 'Contains caffeine. Not recommended for children, pregnant or lactating women, persons sensitive to caffeine and sportspersons. Do not consume more than 500ml a day.'],
+  ['How long does it keep?', 'Best before 12 months from manufacture. The batch number and manufacturing date are printed on the base of every can. Serve chilled.'],
+  ['Why \u201cFirst Draft\u201d?', 'Because perfection never arrives. The people who change the world aren\u2019t the ones who waited, they\u2019re the ones who started.']
+];
+const NAV = [['drafts', 'Flavours'], ['shop', 'Shop'], ['help', 'Help']];
+const DETAILS = [['ing', 'Ingredients'], ['nut', 'Nutrition'], ['info', 'Good to know']];
+const shotBg = v => v ? 'url(' + v + ')' : 'none';
+const inr = v => '\u20b9' + v.toLocaleString('en-IN');
+
+class Component extends DCLogic {
+  state = { buy: 'once', freq: '2', nEmail: '', narrow: typeof window !== 'undefined' && window.innerWidth < 760, cTopic: 'Order', cName: '', cEmail: '', cOrder: '', cMsg: '', cSent: false, flavor: 'apple', pack: '4', qty: 1, cart: [], cartOpen: false, openFaq: 0, detail: 'ing', pin: '', notified: false, checkoutNote: false, shots: {}, added: false, toast: '', bump: false, nav: '', bar: false, navHidden: false };
+  heroCanEl = React.createRef(); shopCanEl = React.createRef(); maniRef = React.createRef(); stampRef = React.createRef(); addRef = React.createRef();
+
+  componentDidMount() {
+    const labels = {}; FL.forEach(f => { const im = document.querySelector('img[data-label-src="' + f.key + '"]'); labels[f.key] = (im && im.src) || f.label; });
+    const start = () => {
+      if (this.dead) return;
+      if (!window.FDCan || !this.heroCanEl.current || !this.shopCanEl.current) { this.st = setTimeout(start, 40); return; }
+      const finish = this.props.canFinish ?? 'gloss', spin = this.props.autoSpin ?? true;
+      this.heroCan = new window.FDCan(this.heroCanEl.current, { labels, flavor: this.state.flavor, tilt: 0.1, autoSpin: false, spring: true, finish, zoom: 0.6 });
+      requestAnimationFrame(() => setTimeout(() => { [this.heroCanEl, this.shopCanEl].forEach(r => { if (r.current) r.current.style.opacity = '1'; }); }, 120));
+      this.shopCan = new window.FDCan(this.shopCanEl.current, { labels, flavor: this.state.flavor, tilt: -0.04, autoSpin: spin, finish, zoom: 0.74 });
+      setTimeout(() => { if (!this.dead) window.FDCan.snapshots(labels, { w: 360, h: 560, yaw: -0.3, finish }).then(shots => { if (!this.dead) this.setState({ shots }); }); }, 600);
+      this.update();
+    };
+    start();
+    this.onScroll = () => { cancelAnimationFrame(this.sraf); this.sraf = requestAnimationFrame(() => this.update()); };
+    window.addEventListener('scroll', this.onScroll, { passive: true, capture: true });
+    window.addEventListener('resize', this.onScroll);
+    this.update();
+    this.setupMotion();
+  }
+  setupMotion() {
+    if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const root = this.maniRef.current && this.maniRef.current.closest('x-dc') || document;
+    const ease = 'cubic-bezier(.2,.8,.2,1)';
+    this.io = new IntersectionObserver(es => es.forEach(e => {
+      if (!e.isIntersecting) return;
+      const el = e.target; this.io.unobserve(el);
+      el.style.transition = 'opacity .8s ' + ease + ' ' + (el._d || 0) + 'ms, transform .9s ' + ease + ' ' + (el._d || 0) + 'ms';
+      el.style.opacity = '1'; el.style.transform = 'none';
+      setTimeout(() => { el.style.transition = ''; el.style.transform = ''; }, 1000 + (el._d || 0));
+    }), { rootMargin: '0px 0px -12% 0px' });
+    const arm = (els, step) => els.forEach((el, i) => {
+      if (el._rv || el.getBoundingClientRect().top < innerHeight * 0.9) return;
+      el._rv = 1; el._d = (step || 0) * i; el.style.opacity = '0'; el.style.transform = 'translateY(28px)'; this.io.observe(el);
+    });
+    const sweep = () => {
+      if (this.dead) return;
+      ['#drafts', '#shop', '#reviews', '#faq', '#stockists', '#help'].forEach(id => {
+        const s = document.querySelector(id); if (!s) return;
+        arm(Array.from(s.querySelectorAll('h2')).map(x => x.parentElement));
+      });
+      const g = sel => Array.from(document.querySelectorAll(sel));
+      arm(g('#drafts [data-tilt]'), 90);
+      arm(g('#stockists h2 ~ *, #stockists > div:last-child > div'), 110);
+      arm(g('#faq section > div:last-child > div, #faq > div:last-child > div'), 50);
+      arm(g('#help a[href]'), 70);
+      arm(g('#reviews figure'), 110);
+    };
+    sweep(); this.sw = setTimeout(sweep, 900);
+    // tilt cards
+    this.onTilt = e => {
+      const b = e.target.closest && e.target.closest('[data-tilt]');
+      if (this.tiltEl && this.tiltEl !== b) { const c = this.tiltEl.querySelector('[data-tilt-card]'), sh = this.tiltEl.querySelector('[data-tilt-shot]'); if (c) c.style.transform = ''; if (sh) sh.style.transform = ''; this.tiltEl = null; }
+      if (!b) return;
+      this.tiltEl = b;
+      const c = b.querySelector('[data-tilt-card]'), sh = b.querySelector('[data-tilt-shot]'); if (!c) return;
+      const r = c.getBoundingClientRect(), x = (e.clientX - r.left) / r.width - .5, y = (e.clientY - r.top) / r.height - .5;
+      c.style.transform = 'translateY(-6px) rotateX(' + (-y * 8).toFixed(2) + 'deg) rotateY(' + (x * 10).toFixed(2) + 'deg)';
+      if (sh) sh.style.transform = 'translate3d(' + (x * 10).toFixed(1) + 'px,' + (y * 8 - 4).toFixed(1) + 'px,0) scale(1.04)';
+    };
+    // hero parallax
+    this.onPar = e => {
+      const hero = document.getElementById('top'); if (!hero) return;
+      const r = hero.getBoundingClientRect(); if (r.bottom < 0) return;
+      const x = e.clientX / innerWidth - .5, y = e.clientY / innerHeight - .5;
+      hero.querySelectorAll('[data-par]').forEach(el => { const k = +el.dataset.par; el.style.transform = 'translate3d(' + (x * k).toFixed(1) + 'px,' + (y * k).toFixed(1) + 'px,0)'; });
+      this.mx = x; this.my = y;
+      if (this.stampRef.current) this.update();
+    };
+    window.addEventListener('pointermove', this.onTilt, { passive: true });
+    window.addEventListener('pointermove', this.onPar, { passive: true });
+    this.touch = window.matchMedia && matchMedia('(hover: none), (pointer: coarse)').matches;
+    if (!this.touch) return;
+    // touch: hero parallax from device tilt (iOS asks permission on first tap)
+    this.onOrient = e => {
+      if (e.gamma == null) return;
+      const x = Math.max(-1, Math.min(1, e.gamma / 30)) * .5, y = Math.max(-1, Math.min(1, ((e.beta || 0) - 40) / 30)) * .5;
+      const hero = document.getElementById('top'); if (!hero || hero.getBoundingClientRect().bottom < 0) return;
+      hero.querySelectorAll('[data-par]').forEach(el => { const k = +el.dataset.par; el.style.transform = 'translate3d(' + (x * k).toFixed(1) + 'px,' + (y * k).toFixed(1) + 'px,0)'; });
+      this.mx = x; this.my = y; this.update();
+    };
+    const DOE = window.DeviceOrientationEvent;
+    if (DOE && typeof DOE.requestPermission === 'function') {
+      this.askOrient = () => { window.removeEventListener('touchend', this.askOrient); DOE.requestPermission().then(r => { if (r === 'granted' && !this.dead) window.addEventListener('deviceorientation', this.onOrient); }).catch(() => {}); };
+      window.addEventListener('touchend', this.askOrient, { once: true });
+    } else if (DOE) window.addEventListener('deviceorientation', this.onOrient);
+    // touch: press feedback on flavour cards
+    this.onTDown = e => { const b = e.target.closest && e.target.closest('[data-tilt]'); if (!b) return; const c = b.querySelector('[data-tilt-card]'); if (c) { c.style.transition = 'transform .18s ease-out'; c.style.transform = (c._st || '') + ' scale(.96)'; this.pressEl = c; } };
+    this.onTUp = () => { const c = this.pressEl; if (!c) return; this.pressEl = null; c.style.transition = 'transform .5s cubic-bezier(.2,.8,.2,1)'; c.style.transform = c._st || ''; };
+    window.addEventListener('touchstart', this.onTDown, { passive: true });
+    window.addEventListener('touchend', this.onTUp, { passive: true });
+    window.addEventListener('touchcancel', this.onTUp, { passive: true });
+    this.update();
+  }
+  touchTilt() {
+    if (!this.touch) return;
+    const vh = innerHeight;
+    document.querySelectorAll('#drafts [data-tilt-card]').forEach(c => {
+      if (c === this.pressEl) return;
+      const r = c.getBoundingClientRect(); if (r.bottom < -50 || r.top > vh + 50) return;
+      const d = Math.max(-1, Math.min(1, ((r.top + r.height / 2) - vh / 2) / (vh / 2)));
+      const st = 'rotateX(' + (d * 7).toFixed(2) + 'deg)';
+      c._st = st; c.style.transition = 'none'; c.style.transform = st;
+      const sh = c.querySelector('[data-tilt-shot]'); if (sh) { sh.style.transition = 'none'; sh.style.transform = 'translate3d(0,' + (d * 10).toFixed(1) + 'px,0)'; }
+    });
+  }
+  componentWillUnmount() {
+    this.dead = true; cancelAnimationFrame(this.eraf); clearTimeout(this.sw); if (this.io) this.io.disconnect(); window.removeEventListener('pointermove', this.onTilt); window.removeEventListener('pointermove', this.onPar); window.removeEventListener('deviceorientation', this.onOrient); window.removeEventListener('touchstart', this.onTDown); window.removeEventListener('touchend', this.onTUp); window.removeEventListener('touchcancel', this.onTUp); if (this.askOrient) window.removeEventListener('touchend', this.askOrient); clearTimeout(this.st); clearTimeout(this.tt); clearTimeout(this.at);
+    window.removeEventListener('scroll', this.onScroll, { capture: true }); window.removeEventListener('resize', this.onScroll);
+    [this.heroCan, this.shopCan].forEach(c => c && c.dispose());
+  }
+  syncCans() {
+    const s = this.state, fin = this.props.canFinish ?? 'gloss', spin = this.props.autoSpin ?? true;
+    [this.heroCan, this.shopCan].forEach(c => { if (!c) return; if (c.o.flavor !== s.flavor) c.setFlavor(s.flavor); if (c.o.finish !== fin) c.setFinish(fin); });
+    if (this.shopCan && this.shopCan.o.autoSpin !== spin) this.shopCan.setAutoSpin(spin);
+  }
+
+  tickEdit() {
+    this.eraf = 0;
+    const m = this.maniRef.current; if (!m || this.dead) return;
+    const d = this.mpT - this.mp;
+    this.mp = Math.abs(d) < 0.0005 ? this.mpT : this.mp + d * 0.14;
+    if (!this.edits || !this.edits.length || !this.edits[0].isConnected) this.edits = Array.from(m.querySelectorAll('[data-at]'));
+    const ease = x => x * x * (3 - 2 * x);
+    this.edits.forEach(el => {
+      const v = ease(Math.min(1, Math.max(0, (this.mp - +el.dataset.at) / 0.09))), k = el.dataset.k;
+      if (k === 'line') { el.style.opacity = (0.12 + 0.88 * v).toFixed(3); el.style.transform = 'translate3d(0,' + ((1 - v) * 14).toFixed(2) + 'px,0)'; }
+      else if (k === 'strike') el.style.transform = 'scaleX(' + v.toFixed(4) + ')';
+      else if (k === 'fix') {
+        el.style.opacity = v.toFixed(3);
+        el.style.transform = 'translate3d(' + ((1 - v) * -18).toFixed(2) + 'px,' + ((1 - v) * 8).toFixed(2) + 'px,0)';
+      }
+    });
+    if (this.mp !== this.mpT) this.eraf = requestAnimationFrame(() => this.tickEdit());
+  }
+  update() {
+    const vh = window.innerHeight, y = window.scrollY || document.documentElement.scrollTop || 0;
+    const p = Math.min(1.5, y / vh);
+    if (this.heroCan) this.heroCan.setRotation(p * Math.PI * 1.2);
+    if (this.stampRef.current) this.stampRef.current.style.transform = 'translate(calc(-50% + ' + (-(this.mx || 0) * 8).toFixed(1) + 'px),calc(' + (-50 + p * 5).toFixed(2) + '% + ' + (-(this.my || 0) * 8).toFixed(1) + 'px))';
+    this.touchTilt();
+    const m = this.maniRef.current;
+    if (m) {
+      const r = m.getBoundingClientRect();
+      this.mpT = Math.min(1, Math.max(0, (-r.top + vh * 0.3) / Math.max(1, r.height - vh * 0.7)));
+      if (this.mp == null) this.mp = this.mpT;
+      if (!this.eraf) this.eraf = requestAnimationFrame(() => this.tickEdit());
+    }
+    let nav = '';
+    NAV.forEach(([id]) => { const el = document.getElementById(id); if (el && el.getBoundingClientRect().top < vh * 0.45) nav = id; });
+    const btn = this.addRef.current;
+    let bar = false;
+    if (btn) { const br = btn.getBoundingClientRect(); const ft = document.querySelector('footer'); bar = br.bottom < 0 && !(ft && ft.getBoundingClientRect().top < vh - 40); }
+    const dy = y - (this.lastY || 0); this.lastY = y;
+    let navHidden = this.state.navHidden;
+    if (y < 120) navHidden = false; else if (dy > 6) navHidden = true; else if (dy < -6) navHidden = false;
+    const narrow = window.innerWidth < 760;
+    if (nav !== this.state.nav || bar !== this.state.bar || navHidden !== this.state.navHidden || narrow !== this.state.narrow) this.setState({ nav, bar, navHidden, narrow });
+  }
+
+  pick(key, scroll) {
+    this.setState({ flavor: key });
+    if (scroll) { const el = document.getElementById('shop'); if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 40, behavior: 'smooth' }); }
+  }
+  addToCart() {
+    const s = this.state, key = s.flavor + ':' + s.pack + ':' + (s.buy === 'sub' ? 'sub' + s.freq : 'once');
+    const cart = s.cart.map(c => ({ ...c })); const ex = cart.find(c => c.key === key);
+    if (ex) ex.qty += s.qty; else cart.push({ key, flavor: s.flavor, pack: s.pack, qty: s.qty, sub: s.buy === 'sub' ? s.freq : null });
+    const fl = FL.find(f => f.key === s.flavor), pk = PACKS.find(p => p.key === s.pack);
+    this.setState({ cart, added: true, bump: true, toast: (s.qty > 1 ? s.qty + ' \u00d7 ' : '') + pk.name + ', ' + fl.name + (s.buy === 'sub' ? ' \u00b7 every ' + s.freq + ' weeks' : ''), checkoutNote: false });
+    clearTimeout(this.at); clearTimeout(this.tt);
+    this.at = setTimeout(() => this.setState({ added: false, bump: false }), 1600);
+    this.tt = setTimeout(() => this.setState({ toast: '' }), 3200);
+  }
+  setQty(key, d) { this.setState(s => ({ cart: s.cart.map(c => c.key === key ? { ...c, qty: c.qty + d } : c).filter(c => c.qty > 0) })); }
+
+  renderVals() {
+    const s = this.state;
+    setTimeout(() => this.syncCans(), 0);
+    const f = FL.find(x => x.key === s.flavor) || FL[0];
+    const stStyle = this.props.stampStyle ?? 'printed';
+    const t = { ...f, no: FL.indexOf(f) + 1, desc: '12% real ' + f.name.toLowerCase() + ' juice, 80mg of natural caffeine and 100mg of L-theanine in a 330ml can.', ingredients: 'Carbonated water, ' + f.juice + ' juice (12%), cane sugar, green coffee bean extract (natural caffeine), L-theanine, acidity regulator (330), vitamins (B3, B6, B12), natural ' + f.juice.toLowerCase() + ' flavour.' };
+    const unit = sub => Math.round(PRICE * (sub ? 1 - SUB_OFF : 1));
+    const isSub = s.buy === 'sub', u = unit(isSub);
+    const pack = PACKS.find(p => p.key === s.pack) || PACKS[1];
+    const cartItems = s.cart.map(c => {
+      const fl = FL.find(x => x.key === c.flavor), pk = PACKS.find(p => p.key === c.pack);
+      return {
+        key: c.key, title: 'Draft 1 \u00b7 ' + fl.name, sub: (pk.n > 1 ? pk.name + ' \u00b7 ' + pk.n + ' cans' : 'Single can') + ' \u00b7 ' + inr(unit(c.sub)) + '/can' + (c.sub ? ' \u00b7 every ' + c.sub + ' weeks' : ''), qty: c.qty,
+        price: inr(unit(c.sub) * pk.n * c.qty), thumbBg: fl.bg, shotBg: shotBg(s.shots[fl.key]),
+        inc: () => this.setQty(c.key, 1), dec: () => this.setQty(c.key, -1), remove: () => this.setQty(c.key, -c.qty)
+      };
+    });
+    const cans = s.cart.reduce((a, c) => a + PACKS.find(p => p.key === c.pack).n * c.qty, 0);
+    return {
+      unitPrice: inr(u), unitNote: isSub ? 'per can with a subscription \u00b7 incl. of all taxes' : 'per can \u00b7 incl. of all taxes',
+      badges: [['Caffeine', '80mg, from green coffee'], ['L-theanine', '100mg'], ['Sugar', '13.9g per can'], ['Juice', '12% real ' + f.name.toLowerCase()]].map(([k, v]) => ({ k, v })),
+      isSub,
+      buyOpts: [['once', 'One-time', 'Pay as you go'], ['sub', 'Subscribe', 'Save 10% on every delivery']].map(([k, name, sub]) => { const on = s.buy === k; return { name, sub, active: on, tagShow: k === 'sub' ? 'inline-block' : 'none', border: on ? '#000' : 'rgba(0,0,0,0.2)', bg: on ? '#000' : '#fff', fg: on ? '#fff' : '#000', pick: () => this.setState({ buy: k }) }; }),
+      freqs: [['2', 'Every 2 weeks'], ['4', 'Every 4 weeks']].map(([k, label]) => { const on = s.freq === k; return { label, active: on, border: on ? '#000' : 'rgba(0,0,0,0.2)', bg: on ? '#000' : '#fff', fg: on ? '#fff' : '#000', pick: () => this.setState({ freq: k }) }; }),
+      reviews: REVIEWS.map(([q, who, k]) => { const x = FL.find(y => y.key === k); return { q, who, flavor: x.name, accent: x.accent, bg: x.bg }; }),
+      nEmail: s.nEmail, onNEmail: e => this.setState({ nEmail: e.target.value }),
+      faqPos: s.narrow ? 'static' : 'sticky',
+      shopPos: s.narrow ? 'relative' : 'sticky', shopH: s.narrow ? 'min(46vh,380px)' : 'min(calc(100vh - 120px),800px)', shopMinH: s.narrow ? '300px' : '460px',
+      navPadX: s.narrow ? '10px' : '15px', navFs: s.narrow ? '14px' : '16px', navLogoPad: s.narrow ? '8px 8px 8px 10px' : '8px 14px 8px 12px', navSep: s.narrow ? 'none' : 'block', navLs: s.narrow ? '.06em' : '.1em',
+      stPrinted: stStyle === 'printed', stPostmark: stStyle === 'postmark',
+      t, heroCanEl: this.heroCanEl, shopCanEl: this.shopCanEl, maniRef: this.maniRef, stampRef: this.stampRef, addRef: this.addRef,
+      navY: s.navHidden && !s.cartOpen ? '-160%' : '0',
+      navLinks: NAV.map(([id, label]) => ({ href: '#' + id, label, bg: s.nav === id ? '#fff' : 'transparent', fg: s.nav === id ? '#000' : '#fff' })),
+      facts: [{ v: '80mg', l: 'Natural caffeine' }, { v: '100mg', l: 'L-theanine' }, { v: '12%', l: 'Real fruit juice' }, { v: '63', l: 'kcal per can' }],
+      drafts: FL.map((x, i) => ({ no: '0' + (i + 1), name: x.name, note: x.note, bg: x.bg, accent: x.accent, shotBg: shotBg(s.shots[x.key]), cta: x.key === f.key ? 'Selected' : 'Shop \u2192', pick: () => this.pick(x.key, true) })),
+      swatches: FL.map(x => { const on = x.key === f.key; return { name: x.name, accent: x.accent, active: on, bg: on ? '#000' : '#fff', fg: on ? '#fff' : '#000', border: on ? '#000' : 'rgba(0,0,0,0.2)', pick: () => this.pick(x.key) }; }),
+      packs: PACKS.map(p => { const on = p.key === pack.key; return { name: p.name, cans: p.n === 1 ? '1 can' : p.n + ' cans', total: inr(u * p.n), active: on, border: on ? '#000' : 'rgba(0,0,0,0.2)', bg: on ? '#000' : '#fff', fg: on ? '#fff' : '#000', pick: () => this.setState({ pack: p.key }) }; }),
+      packName: pack.n > 1 ? pack.name : 'Single can',
+      qty: s.qty, inc: () => this.setState(st => ({ qty: Math.min(24, st.qty + 1) })), dec: () => this.setState(st => ({ qty: Math.max(1, st.qty - 1) })),
+      total: inr(u * pack.n * s.qty), addToCart: () => this.addToCart(),
+      addLabel: s.added ? 'Added \u2713' : 'Add to cart', addShort: s.added ? 'Added \u2713' : 'Add to cart', addBg: s.added ? f.accent : '#000', addFg: s.added ? '#000' : '#fff',
+      details: DETAILS.map(([k, label]) => { const open = s.detail === k; return { label, open, rot: open ? 'rotate(45deg)' : 'none', isIng: open && k === 'ing', isNut: open && k === 'nut', isInfo: open && k === 'info', toggle: () => this.setState(st => ({ detail: st.detail === k ? '' : k })) }; }),
+      nut: NUT.map(n => ({ name: n[0], a: n[1], b: n[2], pad: n[3] ? '20px' : '0px' })),
+      faq: FAQ.map((q, i) => { const open = s.openFaq === i; return { q: q[0], a: q[1], open, rows: open ? '1fr' : '0fr', op: open ? 1 : 0, ty: open ? '0px' : '-8px', rot: open ? 'rotate(45deg)' : 'none', toggle: () => this.setState(st => ({ openFaq: st.openFaq === i ? -1 : i })) }; }),
+      ...(() => {
+        const okMail = /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(s.cEmail.trim()), ok = s.cName.trim() && okMail && s.cMsg.trim().length > 3;
+        const hint = ok ? 'Ready when you are.' : !s.cName.trim() ? 'Add your name.' : !okMail ? 'Add a valid email.' : 'Write a short message.';
+        const set = k => e => this.setState({ [k]: e.target.value });
+        return {
+          cSent: s.cSent, cForm: !s.cSent, cFirst: s.cName.trim().split(' ')[0], cEmail: s.cEmail, cName: s.cName, cOrder: s.cOrder, cMsg: s.cMsg,
+          cIsOrder: s.cTopic === 'Order', cHint: hint, cBlocked: !ok, cOp: ok ? 1 : 0.35, cCursor: ok ? 'pointer' : 'not-allowed',
+          cTopics: ['Order', 'Delivery', 'Wholesale', 'Press', 'Other'].map(l => ({ label: l, on: s.cTopic === l, bg: s.cTopic === l ? '#000' : 'transparent', fg: s.cTopic === l ? '#fff' : '#000', pick: () => this.setState({ cTopic: l }) })),
+          onCName: set('cName'), onCEmail: set('cEmail'), onCOrder: set('cOrder'), onCMsg: set('cMsg'),
+          cSend: () => { if (ok) this.setState({ cSent: true }); },
+          cReset: () => this.setState({ cSent: false, cMsg: '', cOrder: '' })
+        };
+      })(),
+      pin: s.pin, notified: s.notified, notNotified: !s.notified, notifyOp: s.pin.length === 6 && /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test((s.nEmail || '').trim()) ? 1 : 0.4,
+      onPin: e => this.setState({ pin: e.target.value.replace(/\D/g, '').slice(0, 6) }),
+      onPinKey: e => { if (e.key === 'Enter' && this.state.pin.length === 6 && /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test((s.nEmail || '').trim())) this.setState({ notified: true }); },
+      notify: () => { if (s.pin.length === 6 && /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test((s.nEmail || '').trim())) this.setState({ notified: true }); },
+      barY: s.bar && !s.cartOpen ? '0' : '160%',
+      toastOn: !!s.toast && !s.cartOpen, toast: s.toast,
+      cartOpen: s.cartOpen, cartX: s.cartOpen ? 'translateX(0)' : 'translateX(105%)', cartBump: s.bump ? 'scale(1.3)' : 'scale(1)',
+      openCart: () => this.setState({ cartOpen: true, toast: '' }), closeCart: () => this.setState({ cartOpen: false }),
+      browse: () => { this.setState({ cartOpen: false }); const el = document.getElementById('drafts'); if (el) window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 60, behavior: 'smooth' }); },
+      cartItems, cartEmpty: cartItems.length === 0, cartCount: s.cart.reduce((a, c) => a + c.qty, 0), canCount: cans === 1 ? '1 can' : cans + ' cans',
+      ...(() => {
+        const sub = s.cart.reduce((a, c) => a + unit(c.sub) * PACKS.find(p => p.key === c.pack).n * c.qty, 0);
+        const free = cans >= FREE_SHIP, fee = s.cart.length && !free ? SHIP : 0;
+        return {
+          subtotal: inr(sub), shipFee: !s.cart.length ? '\u2014' : free ? 'Free' : inr(SHIP), grand: inr(sub + fee), cartHas: s.cart.length > 0,
+          shipMsg: free ? 'Free delivery unlocked.' : 'Add ' + (FREE_SHIP - cans) + ' more ' + (FREE_SHIP - cans === 1 ? 'can' : 'cans') + ' for free delivery.',
+          shipPct: Math.min(100, Math.round(cans / FREE_SHIP * 100)) + '%'
+        };
+      })(),
+      checkout: () => this.setState({ checkoutNote: true }), checkoutNote: s.checkoutNote
+    };
+  }
+}
+</script>
+</body>
+</html>
